@@ -1,10 +1,3 @@
-/**
- * RoadWatch Indonesia — RoadDamageMarker Component
- *
- * Custom Leaflet marker using L.divIcon with SVG pin & non-color shape indicators.
- * Fully compliant with PRD §15 visual accessibility guidelines.
- */
-
 import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import type { Report } from '@/types';
@@ -14,6 +7,7 @@ import { RoadDamagePopup } from '@/features/reports';
 interface RoadDamageMarkerProps {
   report: Report;
   onSelect?: (report: Report) => void;
+  onViewDetails?: (report: Report) => void;
 }
 
 /**
@@ -25,7 +19,7 @@ function createCustomMarkerIcon(severity: Report['severity']) {
 
   // SVG HTML with glow, pin shape, and non-color icon
   const svgHtml = `
-    <div class="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-125 group">
+    <div class="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-125 group select-none">
       <!-- Pulsing ripple ring for active severity warning -->
       <div 
         class="absolute -inset-2 rounded-full opacity-60 animate-ping pointer-events-none" 
@@ -34,11 +28,11 @@ function createCustomMarkerIcon(severity: Report['severity']) {
 
       <!-- Outer pin container -->
       <div 
-        class="relative flex items-center justify-center w-9 h-9 rounded-full border-2 border-white/90 shadow-xl text-white font-bold text-xs backdrop-blur-md transition-shadow group-hover:shadow-2xl"
-        style="background-color: ${config.color}; box-shadow: 0 0 15px ${config.color}80;"
+        class="relative flex items-center justify-center w-9 h-9 rounded-full border-2 border-white shadow-xl text-white font-bold text-xs backdrop-blur-md transition-shadow group-hover:shadow-2xl"
+        style="background-color: ${config.color}; box-shadow: 0 0 15px ${config.color}90;"
       >
         <!-- Non-color shape symbol (triangle, diamond, square, star) -->
-        <span class="text-sm select-none drop-shadow-sm">${config.icon}</span>
+        <span class="text-sm select-none drop-shadow-sm font-sans">${config.icon}</span>
       </div>
 
       <!-- Pin pointer tip -->
@@ -58,7 +52,7 @@ function createCustomMarkerIcon(severity: Report['severity']) {
   });
 }
 
-export function RoadDamageMarker({ report, onSelect }: RoadDamageMarkerProps) {
+export function RoadDamageMarker({ report, onSelect, onViewDetails }: RoadDamageMarkerProps) {
   const customIcon = createCustomMarkerIcon(report.severity);
 
   return (
@@ -72,7 +66,7 @@ export function RoadDamageMarker({ report, onSelect }: RoadDamageMarkerProps) {
       }}
     >
       <Popup className="custom-leaflet-popup">
-        <RoadDamagePopup report={report} />
+        <RoadDamagePopup report={report} onViewDetails={onViewDetails} />
       </Popup>
     </Marker>
   );

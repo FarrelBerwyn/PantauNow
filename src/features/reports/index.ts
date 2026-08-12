@@ -1,1 +1,2 @@
-export { RoadDamagePopup } from './RoadDamagePopup';
+export * from './RoadDamagePopup';
+export * from './ReportDetailModal';

@@ -1,16 +1,10 @@
-/**
- * RoadWatch Indonesia — RoadDamageMap Component
- *
- * Interactive Leaflet Map component centered on Jakarta / Indonesia.
- * Renders OSM tiles, road damage markers, floating map controls, and handles viewport operations.
- */
-
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect } from 'react';
 import type { Report } from '@/types';
 import { MAP_CONFIG } from '@/lib';
 import { RoadDamageMarker } from './RoadDamageMarker';
+import { Plus, Minus, Target } from 'lucide-react';
 
 /** Center of Jakarta (Monas area) */
 export const JAKARTA_CENTER: [number, number] = [-6.2088, 106.8456];
@@ -48,33 +42,37 @@ function FloatingMapControls() {
   const handleResetCenter = () => map.flyTo(JAKARTA_CENTER, JAKARTA_DEFAULT_ZOOM, { duration: 1.2 });
 
   return (
-    <div className="absolute bottom-6 right-6 z-[400] flex flex-col gap-2">
-      <div className="flex flex-col overflow-hidden rounded-xl border border-white/10 bg-surface-900/80 backdrop-blur-md shadow-2xl">
+    <div className="absolute bottom-16 right-4 sm:bottom-6 sm:right-6 z-[30] flex flex-col gap-2 pointer-events-auto select-none">
+      {/* Zoom Buttons Group */}
+      <div className="flex flex-col overflow-hidden rounded-xl border border-white/15 bg-surface-900/90 backdrop-blur-md shadow-2xl">
         <button
           type="button"
           onClick={handleZoomIn}
-          title="Zoom In"
-          className="flex h-9 w-9 items-center justify-center text-surface-200 hover:bg-surface-800 hover:text-white transition-colors border-b border-white/10"
+          title="Perbesar Peta (Zoom In)"
+          aria-label="Zoom In"
+          className="flex h-10 w-10 items-center justify-center text-surface-200 hover:bg-surface-800 hover:text-white transition-colors border-b border-white/10 active:bg-surface-700"
         >
-          ➕
+          <Plus className="w-4 h-4" />
         </button>
         <button
           type="button"
           onClick={handleZoomOut}
-          title="Zoom Out"
-          className="flex h-9 w-9 items-center justify-center text-surface-200 hover:bg-surface-800 hover:text-white transition-colors"
+          title="Perkecil Peta (Zoom Out)"
+          aria-label="Zoom Out"
+          className="flex h-10 w-10 items-center justify-center text-surface-200 hover:bg-surface-800 hover:text-white transition-colors active:bg-surface-700"
         >
-          ➖
+          <Minus className="w-4 h-4" />
         </button>
       </div>
 
+      {/* Reset Center Button */}
       <button
         type="button"
         onClick={handleResetCenter}
-        title="Reset Ke Wilayah Jakarta"
-        className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-surface-900/80 px-3 text-xs font-medium text-surface-200 hover:bg-surface-800 hover:text-white transition-colors backdrop-blur-md shadow-2xl"
+        title="Reset Lokasi Ke Wilayah Jakarta"
+        className="flex h-10 items-center gap-2 rounded-xl border border-white/15 bg-surface-900/90 px-3.5 text-xs font-semibold text-surface-200 hover:bg-surface-800 hover:text-white transition-all backdrop-blur-md shadow-2xl active:scale-[0.97]"
       >
-        <span>🎯</span>
+        <Target className="w-4 h-4 text-primary-400" />
         <span className="hidden sm:inline">Reset Jakarta</span>
       </button>
     </div>
@@ -85,6 +83,7 @@ interface RoadDamageMapProps {
   reports: Report[];
   selectedReport?: Report | null;
   onSelectReport?: (report: Report) => void;
+  onViewDetails?: (report: Report) => void;
   center?: [number, number];
   zoom?: number;
 }
@@ -93,6 +92,7 @@ export function RoadDamageMap({
   reports,
   selectedReport,
   onSelectReport,
+  onViewDetails,
   center = JAKARTA_CENTER,
   zoom = JAKARTA_DEFAULT_ZOOM,
 }: RoadDamageMapProps) {
@@ -125,6 +125,7 @@ export function RoadDamageMap({
             key={report.id}
             report={report}
             onSelect={onSelectReport}
+            onViewDetails={onViewDetails}
           />
         ))}
       </MapContainer>

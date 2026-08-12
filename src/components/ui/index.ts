@@ -1,5 +1,3 @@
-/**
- * RoadWatch Indonesia — Shared Components Barrel
- *
- * Reusable UI components (shadcn/ui + custom).
- */
+export * from './Badge';
+export * from './Button';
+export * from './Modal';
